@@ -1,2 +1,6 @@
+include .env
+export
+
 gin:
-	gin go install
+	@pp=$(shell python3 -c "print (${PORT} + 1)");  \
+	gin --build cmd -i --bin build/server --port $${pp} --appPort ${PORT}

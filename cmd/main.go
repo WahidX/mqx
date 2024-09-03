@@ -1,18 +1,30 @@
-package cmd
+package main
 
 import (
 	"fmt"
 	"go-mq/internal/entities"
+	"net/http"
 	"os"
 
 	"gopkg.in/yaml.v2"
 )
 
 func main() {
-	var cfg entities.Config
-	readFile(&cfg)
-	readEnv(&cfg)
-	fmt.Printf("%+v", cfg)
+	// var cfg entities.Config
+	// readFile(&cfg)
+	// readEnv(&cfg)
+	// fmt.Printf("%+v", cfg)
+	// TODO: Reading a config will take place here. Need to decide the configurable vars
+
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("GET /ping", pingHandler)
+
+	http.ListenAndServe(":4000", mux)
+}
+
+func pingHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Pong"))
 }
 
 func processError(err error) {
@@ -34,9 +46,9 @@ func readFile(cfg *entities.Config) {
 	}
 }
 
-func readEnv(cfg *entities.Config) {
-	err := envconfig.Process("", cfg)
-	if err != nil {
-		processError(err)
-	}
-}
+// func readEnv(cfg *entities.Config) {
+// err := envconfig.Process("", cfg)
+// 	if err != nil {
+// 		processError(err)
+// 	}
+// }

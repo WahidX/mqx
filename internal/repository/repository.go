@@ -8,6 +8,6 @@ type Repository interface {
 type respository struct {
 }
 
-func NewRepository() Repository {
+func New() Repository {
 	return &respository{}
 }

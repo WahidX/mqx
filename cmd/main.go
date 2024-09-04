@@ -5,6 +5,7 @@ import (
 
 	"go-mq/internal/apis"
 	"go-mq/internal/handler"
+	"go-mq/internal/repository"
 	"go-mq/internal/service"
 	"go-mq/internal/utils"
 	"go-mq/pkg/logger"
@@ -25,14 +26,11 @@ func main() {
 		}
 	}()
 
-	services := service.New()
+	repository := repository.New()
+	services := service.New(repository)
 	handlers := handler.New(services)
 
 	mux := apis.RestMux(handlers)
 
 	logger.L.Fatal("Server error: ", zap.Any("error", http.ListenAndServe(cfg.Server.Port, mux)))
-}
-
-func pingHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Pong"))
 }

@@ -1,48 +1,38 @@
 package main
 
 import (
-	"go-mq/internal/entities"
-	"io/ioutil"
-	"log"
 	"net/http"
 
+	"go-mq/internal/apis"
+	"go-mq/internal/handler"
+	"go-mq/internal/service"
+	"go-mq/internal/utils"
 	"go-mq/pkg/logger"
 
-	"gopkg.in/yaml.v2"
+	"go.uber.org/zap"
 )
 
 func main() {
-	cfg := loadConfig()
+	// Loading config
+	cfg := utils.LoadConfig()
+
+	// Logger setup
 	logger.Init(cfg.Env)
-	defer logger.L.Sync()
+	defer func() {
+		err := logger.L.Sync()
+		if err != nil {
+			logger.L.Fatal("Error syncing logger: ", zap.Any("error", err))
+		}
+	}()
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("GET /ping", pingHandler)
-	http.ListenAndServe(":4000", mux)
-}
+	services := service.New()
+	handlers := handler.New(services)
 
-func loadConfig() *entities.Config {
-	yamlFile, err := ioutil.ReadFile("config.yml")
-	if err != nil {
-		log.Fatalf("Error reading config.yml file: %s\n", err)
-	}
+	mux := apis.RestMux(handlers)
 
-	var config *entities.Config
-	err = yaml.Unmarshal(yamlFile, &config)
-	if err != nil {
-		log.Fatalf("Error unmarshaling config.yml: %s\n", err)
-	}
-
-	return config
+	logger.L.Fatal("Server error: ", zap.Any("error", http.ListenAndServe(cfg.Server.Port, mux)))
 }
 
 func pingHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Pong"))
 }
-
-// func readEnv(cfg *entities.Config) {
-// err := envconfig.Process("", cfg)
-// 	if err != nil {
-// 		processError(err)
-// 	}
-// }

@@ -1,49 +1,43 @@
 package main
 
 import (
-	"fmt"
 	"go-mq/internal/entities"
+	"io/ioutil"
+	"log"
 	"net/http"
-	"os"
+
+	"go-mq/pkg/logger"
 
 	"gopkg.in/yaml.v2"
 )
 
 func main() {
-	// var cfg entities.Config
-	// readFile(&cfg)
-	// readEnv(&cfg)
-	// fmt.Printf("%+v", cfg)
-	// TODO: Reading a config will take place here. Need to decide the configurable vars
+	cfg := loadConfig()
+	logger.Init(cfg.Env)
+	defer logger.L.Sync()
 
 	mux := http.NewServeMux()
-
 	mux.HandleFunc("GET /ping", pingHandler)
-
 	http.ListenAndServe(":4000", mux)
+}
+
+func loadConfig() *entities.Config {
+	yamlFile, err := ioutil.ReadFile("config.yml")
+	if err != nil {
+		log.Fatalf("Error reading config.yml file: %s\n", err)
+	}
+
+	var config *entities.Config
+	err = yaml.Unmarshal(yamlFile, &config)
+	if err != nil {
+		log.Fatalf("Error unmarshaling config.yml: %s\n", err)
+	}
+
+	return config
 }
 
 func pingHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Pong"))
-}
-
-func processError(err error) {
-	fmt.Println(err)
-	os.Exit(2)
-}
-
-func readFile(cfg *entities.Config) {
-	f, err := os.Open("config.yml")
-	if err != nil {
-		processError(err)
-	}
-	defer f.Close()
-
-	decoder := yaml.NewDecoder(f)
-	err = decoder.Decode(cfg)
-	if err != nil {
-		processError(err)
-	}
 }
 
 // func readEnv(cfg *entities.Config) {

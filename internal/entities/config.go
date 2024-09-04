@@ -1,12 +1,9 @@
 package entities
 
 type Config struct {
+	Env string `yaml:"env"`
+
 	Server struct {
-		Port string `yaml:"port", envconfig:"SERVER_PORT"`
-		Host string `yaml:"host", envconfig:"SERVER_HOST"`
+		Port string `yaml:"port"`
 	} `yaml:"server"`
-	Database struct {
-		Username string `yaml:"user", envconfig:"DB_USERNAME"`
-		Password string `yaml:"pass", envconfig:"DB_PASSWORD"`
-	} `yaml:"database"`
 }

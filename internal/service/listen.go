@@ -24,12 +24,21 @@ func (s *service) Listen(ctx context.Context, w http.ResponseWriter, lReq *entit
 
 	// Stop the stream in case context cancelled
 	// Simulate a stream of messages
-	for i := 0; i < 10; i++ {
-		fmt.Fprintf(w, "data: Message %d\n\n", i+1)
-		flusher.Flush() // Flush the data to the client
 
-		time.Sleep(1 * time.Second)
+	var i = 0
+
+	for {
+		select {
+		case <-ctx.Done():
+			logger.Info("Listener disconnected")
+			return
+		default:
+			fmt.Fprintf(w, "data: Message %d\n\n", i)
+			flusher.Flush() // Flush the data to the client
+
+			i++
+			time.Sleep(1 * time.Second)
+		}
 	}
 
-	logger.Info("Stream closed")
 }

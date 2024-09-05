@@ -32,5 +32,6 @@ func main() {
 
 	mux := apis.RestMux(handlers)
 
-	logger.L.Fatal("Server error: ", zap.Any("error", http.ListenAndServe(cfg.Server.Port, mux)))
+	logger.L.Info("Server listening port " + cfg.Server.Port)
+	logger.L.Fatal("Server error: ", zap.Any("error", http.ListenAndServe(":"+cfg.Server.Port, mux)))
 }

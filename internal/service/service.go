@@ -1,8 +1,15 @@
 package service
 
-import "go-mq/internal/repository"
+import (
+	"context"
+	"go-mq/internal/entities"
+	"go-mq/internal/repository"
+	"net/http"
+)
 
 type Service interface {
+	Publish(ctx context.Context, msg *entities.Message) error
+	Listen(ctx context.Context, w http.ResponseWriter, lReq *entities.ListenerRequest)
 }
 
 type service struct {

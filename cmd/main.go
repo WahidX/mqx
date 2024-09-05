@@ -20,9 +20,9 @@ func main() {
 	// Logger setup
 	logger.Init(utils.Conf.Env)
 	defer func() {
-		err := logger.L.Sync()
+		err := logger.Sync()
 		if err != nil {
-			logger.L.Fatal("Error syncing logger: ", zap.Any("error", err))
+			logger.Fatal("Error syncing logger: ", zap.Any("error", err))
 		}
 	}()
 
@@ -33,6 +33,6 @@ func main() {
 	mux := apis.RestMux(handlers)
 
 	// Starting the rest server
-	logger.L.Info("Server listening port " + utils.Conf.Server.Port)
-	logger.L.Fatal("Server error: ", zap.Any("error", http.ListenAndServe(":"+utils.Conf.Server.Port, mux)))
+	logger.Info("Server listening port " + utils.Conf.Server.Port)
+	logger.Fatal("Server error: ", zap.Any("error", http.ListenAndServe(":"+utils.Conf.Server.Port, mux)))
 }

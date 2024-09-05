@@ -15,10 +15,10 @@ import (
 
 func main() {
 	// Loading config
-	cfg := utils.LoadConfig()
+	utils.LoadConfig()
 
 	// Logger setup
-	logger.Init(cfg.Env)
+	logger.Init(utils.Conf.Env)
 	defer func() {
 		err := logger.L.Sync()
 		if err != nil {
@@ -26,12 +26,13 @@ func main() {
 		}
 	}()
 
+	// Setting up the layers
 	repository := repository.New()
 	services := service.New(repository)
 	handlers := handler.New(services)
-
 	mux := apis.RestMux(handlers)
 
-	logger.L.Info("Server listening port " + cfg.Server.Port)
-	logger.L.Fatal("Server error: ", zap.Any("error", http.ListenAndServe(":"+cfg.Server.Port, mux)))
+	// Starting the rest server
+	logger.L.Info("Server listening port " + utils.Conf.Server.Port)
+	logger.L.Fatal("Server error: ", zap.Any("error", http.ListenAndServe(":"+utils.Conf.Server.Port, mux)))
 }

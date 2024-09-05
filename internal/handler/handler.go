@@ -7,6 +7,8 @@ import (
 
 type Handler interface {
 	Ping(http.ResponseWriter, *http.Request)
+	Publish(http.ResponseWriter, *http.Request)
+	Listen(http.ResponseWriter, *http.Request)
 }
 
 type handler struct {
@@ -18,5 +20,5 @@ func New(service service.Service) Handler {
 }
 
 func (h *handler) Ping(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Pong"))
+	w.Write([]byte("Pong")) // nolint: errcheck
 }

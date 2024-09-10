@@ -1,9 +1,12 @@
 package main
 
 import (
+	"errors"
 	"net/http"
+	"syscall"
 
 	"go-mq/internal/apis"
+	"go-mq/internal/db"
 	"go-mq/internal/handler"
 	"go-mq/internal/repository"
 	"go-mq/internal/service"
@@ -18,21 +21,23 @@ func main() {
 	utils.LoadConfig()
 
 	// Logger setup
-	logger.Init(utils.Conf.Env)
+	l := logger.Init(utils.Conf.Env)
 	defer func() {
-		err := logger.Sync()
-		if err != nil {
-			logger.Fatal("Error syncing logger: ", zap.Any("error", err))
+		err := l.Sync()
+		if err != nil && !errors.Is(err, syscall.ENOTTY) {
+			zap.L().Fatal("Error syncing logger: ", zap.Any("error", err))
 		}
 	}()
 
+	sqliteDB := db.Connect()
+
 	// Setting up the layers
-	repository := repository.New()
+	repository := repository.New(sqliteDB)
 	services := service.New(repository)
 	handlers := handler.New(services)
 	mux := apis.RestMux(handlers)
 
 	// Starting the rest server
-	logger.Info("Server listening port " + utils.Conf.Server.Port)
-	logger.Fatal("Server error: ", zap.Any("error", http.ListenAndServe(":"+utils.Conf.Server.Port, mux)))
+	zap.L().Info("Server listening port " + utils.Conf.Server.Port)
+	zap.L().Fatal("Server error: ", zap.Any("error", http.ListenAndServe(":"+utils.Conf.Server.Port, mux)))
 }

@@ -10,7 +10,7 @@ func (h *handler) Listen(w http.ResponseWriter, r *http.Request) {
 	var lisReq *entities.ListenerRequest
 	// err := json.NewDecoder(r.Body).Decode(&lisReq)
 	// if err != nil {
-	// 	logger.Debug("Error decoding the message", zap.Any("error", err))
+	// 	zap.L().Debug("Error decoding the message", zap.Any("error", err))
 	// }
 
 	// Validation of the ListenerRequest

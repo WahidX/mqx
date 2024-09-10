@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 	"go-mq/internal/entities"
-	"go-mq/pkg/logger"
 	"net/http"
 	"time"
+
+	"go.uber.org/zap"
 )
 
 func (s *service) Listen(ctx context.Context, w http.ResponseWriter, lReq *entities.ListenerRequest) {
@@ -30,7 +31,7 @@ func (s *service) Listen(ctx context.Context, w http.ResponseWriter, lReq *entit
 	for {
 		select {
 		case <-ctx.Done():
-			logger.Info("Listener disconnected")
+			zap.L().Info("Listener disconnected")
 			return
 		default:
 			fmt.Fprintf(w, "data: Message %d\n\n", i)

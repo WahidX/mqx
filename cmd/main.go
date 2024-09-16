@@ -1,9 +1,13 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"net/http"
+	"os"
+	"os/signal"
 	"syscall"
+	"time"
 
 	"go-mq/internal/apis"
 	"go-mq/internal/db"
@@ -25,7 +29,7 @@ func main() {
 	defer func() {
 		err := l.Sync()
 		if err != nil && !errors.Is(err, syscall.ENOTTY) {
-			zap.L().Fatal("Error syncing logger: ", zap.Any("error", err))
+			zap.L().Warn("Error syncing logger: ", zap.Any("error", err))
 		}
 	}()
 
@@ -37,7 +41,35 @@ func main() {
 	handlers := handler.New(services)
 	mux := apis.RestMux(handlers)
 
-	// Starting the rest server
-	zap.L().Info("Server listening port " + utils.Conf.Server.Port)
-	zap.L().Fatal("Server error: ", zap.Any("error", http.ListenAndServe(":"+utils.Conf.Server.Port, mux)))
+	server := &http.Server{
+		Addr:    ":" + utils.Conf.Server.Port,
+		Handler: mux,
+	}
+
+	// Channel to listen for interrupt or terminate signals
+	stopChan := make(chan os.Signal, 1)
+	signal.Notify(stopChan, os.Interrupt, syscall.SIGTERM)
+
+	// Start server in a goroutine
+	go func() {
+		zap.L().Info("Server listening on port " + utils.Conf.Server.Port)
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			zap.L().Fatal("Could not listen on " + utils.Conf.Server.Port + err.Error())
+		}
+	}()
+
+	// Waiting for Ctrl+C (SIGINT) or other termination signals
+	<-stopChan
+	zap.L().Info("Shutting down server...")
+
+	// Context with timeout to allow graceful shutdown
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Attempt graceful shutdown
+	if err := server.Shutdown(ctx); err != nil {
+		zap.L().Fatal("Server forced to shutdown: " + err.Error())
+	}
+
+	zap.L().Info("Server stopped gracefully.")
 }

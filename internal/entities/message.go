@@ -11,6 +11,7 @@ type Message struct {
 }
 
 type MessageRow struct {
+	ID        int64 // auto incremented pk
 	Data      []byte
 	Timestamp time.Time
 	Topic     string

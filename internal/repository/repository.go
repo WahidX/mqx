@@ -8,8 +8,7 @@ import (
 
 type Repository interface {
 	PushMessage(ctx context.Context, msg *entities.MessageRow) (int64, error)
-	// GetMessage(context.Context, string) (*entities.Message, error)
-
+	DeleteAndGetFirst(ctx context.Context, topic string) (*entities.MessageRow, error)
 }
 
 type repository struct {

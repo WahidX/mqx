@@ -1,18 +1,23 @@
 package repository
 
-import "database/sql"
+import (
+	"context"
+	"database/sql"
+	"go-mq/internal/entities"
+)
 
 type Repository interface {
-	// PushMessage(ctx context.Context, msg *entities.Message) error
+	PushMessage(ctx context.Context, msg *entities.MessageRow) (int64, error)
 	// GetMessage(context.Context, string) (*entities.Message, error)
+
 }
 
-type respository struct {
+type repository struct {
 	db *sql.DB
 }
 
 func New(db *sql.DB) Repository {
-	return &respository{
+	return &repository{
 		db: db,
 	}
 }

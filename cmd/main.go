@@ -52,9 +52,9 @@ func main() {
 
 	// Start server in a goroutine
 	go func() {
-		zap.L().Info("Server listening on port " + utils.Conf.Server.Port)
+		zap.L().Info("Server listening on port " + server.Addr)
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			zap.L().Fatal("Could not listen on " + utils.Conf.Server.Port + err.Error())
+			zap.L().Fatal("Could not listen on " + server.Addr + err.Error())
 		}
 	}()
 

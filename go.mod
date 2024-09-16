@@ -8,6 +8,6 @@ require (
 )
 
 require (
-	github.com/mattn/go-sqlite3 v1.14.23 // indirect
+	github.com/mattn/go-sqlite3 v1.14.23
 	go.uber.org/multierr v1.11.0 // indirect
 )

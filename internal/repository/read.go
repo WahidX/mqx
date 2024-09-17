@@ -6,7 +6,7 @@ import (
 	"go-mq/internal/entities"
 )
 
-func (r *repository) DeleteAndGetFirst(ctx context.Context, topic string) (*entities.MessageRow, error) {
+func (r *repository) DequeueMessage(ctx context.Context, topic string) (*entities.MessageRow, error) {
 	var msg = &entities.MessageRow{}
 
 	query := `DELETE FROM table_name WHERE condition = ? RETURNING data, timestamp, topic, partition`

@@ -7,8 +7,8 @@ import (
 )
 
 type Repository interface {
-	PushMessage(ctx context.Context, msg *entities.MessageRow) (int64, error)
-	DeleteAndGetFirst(ctx context.Context, topic string) (*entities.MessageRow, error)
+	EnqueueMessage(ctx context.Context, msg *entities.MessageRow) (int64, error)
+	DequeueMessage(ctx context.Context, topic string) (*entities.MessageRow, error)
 }
 
 type repository struct {

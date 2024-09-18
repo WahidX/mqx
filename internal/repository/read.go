@@ -20,11 +20,11 @@ func (r *repository) DequeueMessage(ctx context.Context, topic string) (*entitie
 			WHERE topic = '%s' 
 			ORDER BY timestamp ASC 
 			LIMIT 1
-		) RETURNING data, timestamp, topic, partition;
+		) RETURNING data, timestamp, topic;
 	`, topic)
 
 	// Execute the query
-	err := r.db.QueryRowContext(ctx, query).Scan(&msg.Data, &msg.Timestamp, &msg.Topic, &msg.Partition)
+	err := r.db.QueryRowContext(ctx, query).Scan(&msg.Data, &msg.Timestamp, &msg.Topic)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	} else if err != nil {

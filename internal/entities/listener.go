@@ -1,9 +1,8 @@
 package entities
 
 type ListenerRequest struct {
-	Topic     string
-	Partition int
-	Offset    int64
+	Topic  string
+	Offset int64
 
 	// more configs
 }

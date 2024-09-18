@@ -18,3 +18,8 @@
 
 Data in each Topic will be stored in file based db. Log DB may be.
 And the data can be retrived in one direction only. sort of append only logs in linked list.
+
+### TODO
+
+- Move from rest to binary protocol
+- Listener management

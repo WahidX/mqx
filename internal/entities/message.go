@@ -5,7 +5,6 @@ type Message struct {
 	Data      []byte
 	Timestamp int64
 	Topic     string
-	Partition int
 }
 
 type MessageRow struct {
@@ -13,5 +12,4 @@ type MessageRow struct {
 	Data      []byte
 	Timestamp int64
 	Topic     string
-	Partition int
 }

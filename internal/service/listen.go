@@ -24,7 +24,6 @@ func (s *service) GetSingleMessage(ctx context.Context, topic string) (*entities
 		Data:      msgRow.Data,
 		Timestamp: msgRow.Timestamp,
 		Topic:     msgRow.Topic,
-		Partition: msgRow.Partition,
 	}
 
 	return msg, nil

@@ -11,7 +11,6 @@ func (s *service) Publish(ctx context.Context, msg *entities.Message) error {
 		Data:      msg.Data,
 		Timestamp: msg.Timestamp,
 		Topic:     msg.Topic,
-		Partition: msg.Partition,
 	})
 
 	return err

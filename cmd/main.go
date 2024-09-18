@@ -34,6 +34,7 @@ func main() {
 	}()
 
 	sqliteDB := db.Connect()
+	defer sqliteDB.Close()
 
 	// Setting up the layers
 	repository := repository.New(sqliteDB)

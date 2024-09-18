@@ -14,8 +14,6 @@ func Connect() *sql.DB {
 		zap.L().Fatal("Error connecting to the database", zap.Any("error", err))
 	}
 
-	defer db.Close()
-
 	err = db.Ping()
 	if err != nil {
 		zap.L().Fatal(err.Error())

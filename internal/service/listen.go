@@ -10,6 +10,26 @@ import (
 	"go.uber.org/zap"
 )
 
+func (s *service) GetSingleMessage(ctx context.Context, topic string) (*entities.Message, error) {
+	msgRow, err := s.Repository.DequeueMessage(ctx, topic)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get message: %v", err)
+	}
+
+	if msgRow == nil {
+		return nil, nil
+	}
+
+	msg := &entities.Message{
+		Data:      msgRow.Data,
+		Timestamp: msgRow.Timestamp,
+		Topic:     msgRow.Topic,
+		Partition: msgRow.Partition,
+	}
+
+	return msg, nil
+}
+
 func (s *service) Listen(ctx context.Context, w http.ResponseWriter, lReq *entities.ListenerRequest) {
 	// Set headers to indicate that the connection should remain open
 	w.Header().Set("Content-Type", "text/event-stream") // For SSE, you can also use "text/plain"

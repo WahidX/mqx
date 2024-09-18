@@ -1,7 +1,5 @@
 package entities
 
-import "time"
-
 type Message struct {
 	Header    map[string]any
 	Data      []byte
@@ -13,7 +11,7 @@ type Message struct {
 type MessageRow struct {
 	ID        int64 // auto incremented pk
 	Data      []byte
-	Timestamp time.Time
+	Timestamp int64
 	Topic     string
 	Partition int
 }

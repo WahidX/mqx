@@ -12,6 +12,7 @@ func RestMux(handlers handler.Handler) *http.ServeMux {
 
 	mux.HandleFunc("POST /publish", handlers.Publish) // this will enqueue published messages
 	mux.HandleFunc("GET /listen", handlers.Listen)    // this will dequeue available messages
+	mux.HandleFunc("GET /message", handlers.GetSingleMessage)
 
 	return mux
 }

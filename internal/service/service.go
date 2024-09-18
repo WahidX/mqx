@@ -9,6 +9,7 @@ import (
 
 type Service interface {
 	Publish(ctx context.Context, msg *entities.Message) error
+	GetSingleMessage(ctx context.Context, topic string) (*entities.Message, error)
 	Listen(ctx context.Context, w http.ResponseWriter, lReq *entities.ListenerRequest)
 }
 

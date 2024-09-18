@@ -6,7 +6,13 @@ import (
 )
 
 func (s *service) Publish(ctx context.Context, msg *entities.Message) error {
-	// Validation of the message
-	// service call
-	return nil
+	// Enqueue the message
+	_, err := s.Repository.EnqueueMessage(ctx, &entities.MessageRow{
+		Data:      msg.Data,
+		Timestamp: msg.Timestamp,
+		Topic:     msg.Topic,
+		Partition: msg.Partition,
+	})
+
+	return err
 }

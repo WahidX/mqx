@@ -9,6 +9,7 @@ import (
 	"go.uber.org/zap"
 )
 
+// Means we need to enqueue the message
 func (h *handler) Publish(w http.ResponseWriter, r *http.Request) {
 	// Parsing the request
 

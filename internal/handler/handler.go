@@ -10,7 +10,7 @@ type Handler interface {
 	Ping(http.ResponseWriter, *http.Request)
 	Publish(http.ResponseWriter, *http.Request)
 	Listen(http.ResponseWriter, *http.Request)
-	GetSingleMessage(http.ResponseWriter, *http.Request)
+	DequeueOne(http.ResponseWriter, *http.Request)
 }
 
 type handler struct {

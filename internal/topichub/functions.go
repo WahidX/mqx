@@ -1,17 +1,17 @@
 package topichub
 
-import "net"
+import "net/http"
 
-func GetTopicConns(topic string) []net.Conn {
+func GetTopicConns(topic string) []http.ResponseWriter {
 	return topicHub[topic]
 }
 
-func AddConnection(topic string, conn net.Conn) {
+func AddConnection(topic string, conn http.ResponseWriter) {
 
 	topicHub[topic] = append(topicHub[topic], conn)
 }
 
-func RemoveConn(topic string, conn net.Conn) {
+func RemoveConn(topic string, conn http.ResponseWriter) {
 	conns := topicHub[topic]
 	for i, c := range conns {
 		if c == conn {

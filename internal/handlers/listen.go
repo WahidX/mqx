@@ -1,41 +1,31 @@
 package handlers
 
 import (
-	"net/http"
+	"net"
 )
 
 // Means we need to deenqueue a message
-func (h *handler) Listen(w http.ResponseWriter, r *http.Request) {
-	// Parsing the request
-	// var lisReq *entities.ListenerRequest
-	// err := json.NewDecoder(r.Body).Decode(&lisReq)
-	// if err != nil {
-	// 	zap.L().Debug("Error decoding the message", zap.Any("error", err))
+func (h *handler) Listen(conn net.Conn) error {
+	// topic := r.URL.Query().Get("topic")
+	// if topic == "" {
+	// 	sendResponse(w, http.StatusBadRequest, "topic is required")
+	// 	return
 	// }
 
-	// Validation of the ListenerRequest
-
-	topic := r.URL.Query().Get("topic")
-	if topic == "" {
-		sendResponse(w, http.StatusBadRequest, "topic is required")
-		return
-	}
-
-	// service call
-	h.service.Listen(r.Context(), w, topic)
+	// // service call
+	// h.service.Listen(r.Context(), w, topic)
+	return nil
 }
 
-func (h *handler) DequeueOne(w http.ResponseWriter, r *http.Request) {
+func (h *handler) DequeueOne(conn net.Conn) error {
 	// Parsing the request
-	topic := r.URL.Query().Get("topic")
+	// topic := r.URL.Query().Get("topic")
 
-	// service call
-	msg, err := h.service.DequeueOne(r.Context(), topic)
-	if err != nil {
-		sendResponse(w, http.StatusInternalServerError, err.Error())
-	}
+	// // service call
+	// msg, err := h.service.DequeueOne(r.Context(), topic)
+	// if err != nil {
+	// 	sendResponse(w, http.StatusInternalServerError, err.Error())
+	// }
 
-	// Response
-	sendResponse(w, http.StatusOK, msg)
-	return
+	return nil
 }

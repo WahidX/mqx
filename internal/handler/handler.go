@@ -57,6 +57,14 @@ func Handle(conn net.Conn) error {
 		}
 
 		switch Command(commandByte) {
+		case Ping:
+			fmt.Println("Ping received from: ", conn.RemoteAddr())
+			err := binary.Write(conn, binary.BigEndian, uint32(1))
+			if err != nil {
+				zap.L().Warn("Error writing response", zap.Error(err))
+				return err
+			}
+
 		case Publish:
 			// Reading the message length
 			var msgLen uint32
@@ -78,7 +86,7 @@ func Handle(conn net.Conn) error {
 			// enqueue it
 
 			// Acknowledge the message
-			conn.Write([]byte("Message received"))
+			fmt.Println(conn.Write([]byte("Message received")))
 
 		case Listen:
 			// read the topic

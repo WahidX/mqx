@@ -3,7 +3,8 @@ package handler
 type Command byte
 
 const (
-	Publish Command = iota + 1
+	Ping Command = iota
+	Publish
 	Listen
 	// More commands can be added here
 )

@@ -55,6 +55,7 @@ func main() {
 			continue
 		}
 
+		zap.L().Info("New connection accepted", zap.String("remote_addr", conn.RemoteAddr().String()))
 		go handler.Handle(conn)
 	}
 

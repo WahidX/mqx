@@ -45,13 +45,13 @@ func Handle(conn net.Conn) error {
 	reader := bufio.NewReader(conn)
 
 	for {
-
 		commandByte, err := reader.ReadByte()
 		if err == io.EOF { // It will keep looping for any new messages on the same connection until the client disconnects
 			zap.L().Warn("Client disconnected", zap.Error(err))
 			return err
 		}
 		if err != nil {
+			fmt.Println(err == io.EOF)
 			zap.L().Warn("Error reading command byte", zap.Error(err))
 			return err
 		}
@@ -77,6 +77,9 @@ func Handle(conn net.Conn) error {
 			fmt.Println("Received message:", string(msg))
 			// enqueue it
 
+			// Acknowledge the message
+			conn.Write([]byte("Message received"))
+
 		case Listen:
 			// read the topic
 			topic, err := reader.ReadString('\n')
@@ -93,6 +96,5 @@ func Handle(conn net.Conn) error {
 			conn.Write([]byte("Unknown command"))
 
 		}
-		return nil
 	}
 }

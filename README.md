@@ -28,3 +28,6 @@ And the data can be retrived in one direction only. sort of append only logs in 
   - [] Update topicHub to use net.Conn
   - [] write the listening logic, publishing logic for handler
 - Listener management
+
+- Need a generic ErrorHandler\
+  Which will handle all the connection close erorrs

@@ -1,4 +1,4 @@
-package handler
+package handlers
 
 import (
 	"go-mq/internal/entities"

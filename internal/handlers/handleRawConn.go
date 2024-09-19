@@ -1,47 +1,16 @@
-package handler
+package handlers
 
 import (
 	"bufio"
 	"encoding/binary"
-	"encoding/json"
 	"fmt"
-	"go-mq/internal/service"
 	"io"
 	"net"
-	"net/http"
 
 	"go.uber.org/zap"
 )
 
-type Handler interface {
-	Ping(http.ResponseWriter, *http.Request)
-	Publish(http.ResponseWriter, *http.Request)
-	Listen(http.ResponseWriter, *http.Request)
-	DequeueOne(http.ResponseWriter, *http.Request)
-}
-
-type handler struct {
-	service service.Service
-}
-
-func New(service service.Service) Handler {
-	return &handler{service: service}
-}
-
-func (h *handler) Ping(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Pong")) // nolint: errcheck
-}
-
-func sendResponse(w http.ResponseWriter, statusCode int, payload interface{}) error {
-	response, _ := json.Marshal(payload)
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(statusCode)
-	_, err := w.Write(response)
-
-	return err
-}
-
-func Handle(conn net.Conn) error {
+func HandleRawConn(conn net.Conn) error {
 	reader := bufio.NewReader(conn)
 
 	for {
@@ -58,12 +27,7 @@ func Handle(conn net.Conn) error {
 
 		switch Command(commandByte) {
 		case Ping:
-			fmt.Println("Ping received from: ", conn.RemoteAddr())
-			err := binary.Write(conn, binary.BigEndian, uint32(1))
-			if err != nil {
-				zap.L().Warn("Error writing response", zap.Error(err))
-				return err
-			}
+			connHandler.Ping(conn)
 
 		case Publish:
 			// Reading the message length

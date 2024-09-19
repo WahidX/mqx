@@ -6,7 +6,7 @@ import (
 	"syscall"
 
 	"go-mq/internal/db"
-	"go-mq/internal/handler"
+	"go-mq/internal/handlers"
 	"go-mq/internal/repository"
 	"go-mq/internal/service"
 	"go-mq/internal/utils"
@@ -33,12 +33,10 @@ func main() {
 
 	// Setting up the layers
 	repository := repository.New(sqliteDB)
-	services := service.New(repository)
-	_ = handler.New(services)
-	// mux := apis.RestMux(handlers)
+	service := service.New(repository)
+	handlers.New(service)
 
 	// Start listening for incoming TCP connections in a goroutine
-
 	server, err := net.Listen("tcp", ":"+utils.Conf.Server.Port)
 	if err != nil {
 		zap.L().Fatal("Error starting server: %v", zap.Error(err))
@@ -56,7 +54,7 @@ func main() {
 		}
 
 		zap.L().Info("New connection accepted", zap.String("remote_addr", conn.RemoteAddr().String()))
-		go handler.Handle(conn)
+		go handlers.HandleRawConn(conn)
 	}
 
 }

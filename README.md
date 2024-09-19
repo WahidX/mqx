@@ -22,4 +22,9 @@ And the data can be retrived in one direction only. sort of append only logs in 
 ### TODO
 
 - Move from rest to binary protocol
+  - [] create net.Connection in main.go
+  - [] write a base handler
+  - [] for each command forward to a handler (convert the rest handlers)
+  - [] Update topicHub to use net.Conn
+  - [] write the listening logic, publishing logic for handler
 - Listener management

@@ -1,6 +1,9 @@
 package topichub
 
-import "net/http"
+import (
+	"context"
+	"net/http"
+)
 
 func GetTopicConns(topic string) []http.ResponseWriter {
 	return topicHub[topic]
@@ -17,6 +20,15 @@ func RemoveConn(topic string, conn http.ResponseWriter) {
 		if c == conn {
 			topicHub[topic] = append(conns[:i], conns[i+1:]...)
 			return
+		}
+	}
+}
+
+func CloseAllConns(ctx context.Context) {
+	for _, conns := range topicHub {
+		for _, conn := range conns {
+			conn.Write([]byte("Server is shutting down"))
+			conn.(http.Flusher).Flush()
 		}
 	}
 }

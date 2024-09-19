@@ -1,15 +1,10 @@
 package main
 
 import (
-	"context"
 	"errors"
-	"net/http"
-	"os"
-	"os/signal"
+	"net"
 	"syscall"
-	"time"
 
-	"go-mq/internal/apis"
 	"go-mq/internal/db"
 	"go-mq/internal/handler"
 	"go-mq/internal/repository"
@@ -39,38 +34,28 @@ func main() {
 	// Setting up the layers
 	repository := repository.New(sqliteDB)
 	services := service.New(repository)
-	handlers := handler.New(services)
-	mux := apis.RestMux(handlers)
+	_ = handler.New(services)
+	// mux := apis.RestMux(handlers)
 
-	server := &http.Server{
-		Addr:    ":" + utils.Conf.Server.Port,
-		Handler: mux,
+	// Start listening for incoming TCP connections in a goroutine
+
+	server, err := net.Listen("tcp", ":"+utils.Conf.Server.Port)
+	if err != nil {
+		zap.L().Fatal("Error starting server: %v", zap.Error(err))
 	}
 
-	// Channel to listen for interrupt or terminate signals
-	stopChan := make(chan os.Signal, 1)
-	signal.Notify(stopChan, os.Interrupt, syscall.SIGTERM)
+	zap.L().Info("Message Queue Server listening on port " + utils.Conf.Server.Port)
 
-	// Start server in a goroutine
-	go func() {
-		zap.L().Info("Server listening on port " + server.Addr)
-		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			zap.L().Fatal("Could not listen on " + server.Addr + err.Error())
+	// Start a new goroutine to accept and handle incoming connections
+	// keeping the main thread free to handle signals
+	for {
+		conn, err := server.Accept()
+		if err != nil {
+			zap.L().Warn("Error accepting connection", zap.Error(err))
+			continue
 		}
-	}()
 
-	// Waiting for Ctrl+C (SIGINT) or other termination signals
-	<-stopChan
-	zap.L().Info("Shutting down server...")
-
-	// Context with timeout to allow graceful shutdown
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	// Attempt graceful shutdown
-	if err := server.Shutdown(ctx); err != nil {
-		zap.L().Fatal("Server forced to shutdown: " + err.Error())
+		go handler.Handle(conn)
 	}
 
-	zap.L().Info("Server stopped gracefully.")
 }

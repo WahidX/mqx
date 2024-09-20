@@ -1,11 +1,13 @@
 package handlers
 
 import (
+	"bufio"
+	"context"
 	"net"
 )
 
 // Means we need to deenqueue a message
-func (h *handler) Listen(conn net.Conn) error {
+func (h *handler) Listen(ctx context.Context, reader *bufio.Reader, conn net.Conn) error {
 	// topic := r.URL.Query().Get("topic")
 	// if topic == "" {
 	// 	sendResponse(w, http.StatusBadRequest, "topic is required")
@@ -17,7 +19,7 @@ func (h *handler) Listen(conn net.Conn) error {
 	return nil
 }
 
-func (h *handler) DequeueOne(conn net.Conn) error {
+func (h *handler) DequeueOne(ctx context.Context, reader *bufio.Reader, conn net.Conn) error {
 	// Parsing the request
 	// topic := r.URL.Query().Get("topic")
 

@@ -30,7 +30,7 @@ func (s *service) DequeueOne(ctx context.Context, topic string) (*entities.Messa
 	return msg, nil
 }
 
-func (s *service) Listen(ctx context.Context, w http.ResponseWriter, topic string) {
+func (s *service) DequeueStream(ctx context.Context, w http.ResponseWriter, topic string) {
 	// Set headers to indicate that the connection should remain open
 	w.Header().Set("Content-Type", "text/event-stream") // For SSE, you can also use "text/plain"
 	w.Header().Set("Cache-Control", "no-cache")

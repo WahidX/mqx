@@ -9,9 +9,9 @@ import (
 )
 
 type Service interface {
-	Publish(ctx context.Context, msg *entities.Message) error
+	Enqueue(ctx context.Context, msg *entities.Message) error
 	DequeueOne(ctx context.Context, topic string) (*entities.Message, error)
-	Listen(ctx context.Context, w http.ResponseWriter, topic string)
+	DequeueStream(ctx context.Context, w http.ResponseWriter, topic string)
 }
 
 type service struct {

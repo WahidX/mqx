@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func (s *service) Publish(ctx context.Context, msg *entities.Message) error {
+func (s *service) Enqueue(ctx context.Context, msg *entities.Message) error {
 	enqueueMesasge := func() error {
 		// Enqueue the message
 		_, err := s.Repository.EnqueueMessage(ctx, &entities.MessageRow{

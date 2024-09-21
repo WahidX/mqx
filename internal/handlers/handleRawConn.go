@@ -22,7 +22,6 @@ func HandleRawConn(conn net.Conn) error {
 		return err
 	}
 	if err != nil {
-		fmt.Println(err == io.EOF)
 		zap.L().Warn("Error reading command byte", zap.Error(err))
 		return err
 	}
@@ -35,15 +34,7 @@ func HandleRawConn(conn net.Conn) error {
 		err = connHandler.Publish(ctx, reader, conn)
 
 	case Listen:
-		// read the topic
-		topic, err := reader.ReadString('\n')
-		if err != nil {
-			zap.L().Warn("Error reading topic", zap.Error(err))
-			return err
-		}
-
-		zap.L().Debug("Need message", zap.String("topic", topic))
-		// add the connection to the topic
+		err = connHandler.Listen(ctx, reader, conn)
 
 	default:
 		zap.L().Info("Unknown command", zap.Any("incoming command", commandByte))
@@ -59,6 +50,7 @@ func HandleRawConn(conn net.Conn) error {
 	if err != nil {
 		conn.Write([]byte("E01"))
 	} else {
+		fmt.Println("HEREHEHEHEHHER")
 		conn.Write([]byte("1")) // 1 means success
 	}
 

@@ -14,11 +14,10 @@ import (
 
 // Means we need to enqueue the message
 func (h *handler) Publish(ctx context.Context, reader *bufio.Reader, conn net.Conn) error {
-	// Parsing the request
-
-	// Read topic name
-	// Read message length
-	// Read message body
+	// Flow:
+	// - Read topic name
+	// - Read message length
+	// - Read message body
 
 	topic, err := reader.ReadString('\n')
 	if err != nil {
@@ -42,6 +41,7 @@ func (h *handler) Publish(ctx context.Context, reader *bufio.Reader, conn net.Co
 
 	zap.L().Debug("Message received", zap.String("topic", topic), zap.String("message", string(msg)))
 
+	// Now Enqueuing the message in storage
 	err = h.service.Enqueue(ctx, &entities.Message{
 		Header:    nil,
 		Data:      msg,

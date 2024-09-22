@@ -2,9 +2,9 @@ package service
 
 import (
 	"context"
-	"go-mq/internal/entities"
-	"go-mq/internal/repository"
-	"go-mq/internal/topichub"
+	"mqx/internal/entities"
+	"mqx/internal/repository"
+	"mqx/internal/topichub"
 	"net/http"
 )
 

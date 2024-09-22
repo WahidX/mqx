@@ -7,12 +7,12 @@ import (
 	"net"
 	"syscall"
 
-	"go-mq/internal/db"
-	"go-mq/internal/handlers"
-	"go-mq/internal/repository"
-	"go-mq/internal/service"
-	"go-mq/internal/utils"
-	"go-mq/pkg/logger"
+	"mqx/internal/db"
+	"mqx/internal/handlers"
+	"mqx/internal/repository"
+	"mqx/internal/service"
+	"mqx/internal/utils"
+	"mqx/pkg/logger"
 
 	"go.uber.org/zap"
 )

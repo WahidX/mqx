@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 	"fmt"
-	"go-mq/internal/entities"
-	"go-mq/internal/topichub"
+	"mqx/internal/entities"
+	"mqx/internal/topichub"
 	"net/http"
 )
 

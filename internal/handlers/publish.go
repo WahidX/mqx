@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"context"
 	"encoding/binary"
-	"go-mq/internal/entities"
+	"mqx/internal/entities"
 	"io"
 	"net"
 	"time"

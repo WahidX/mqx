@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"go-mq/internal/entities"
+	"mqx/internal/entities"
 
 	"go.uber.org/zap"
 )

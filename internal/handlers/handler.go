@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"context"
 	"encoding/binary"
-	"go-mq/internal/service"
+	"mqx/internal/service"
 	"net"
 
 	"go.uber.org/zap"

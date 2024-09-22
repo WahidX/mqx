@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"go-mq/internal/entities"
+	"mqx/internal/entities"
 
 	"go.uber.org/zap"
 )

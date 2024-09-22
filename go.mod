@@ -1,4 +1,4 @@
-module go-mq
+module mqx
 
 go 1.23
 

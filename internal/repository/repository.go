@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"go-mq/internal/entities"
+	"mqx/internal/entities"
 )
 
 type Repository interface {

@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"go-mq/internal/entities"
+	"mqx/internal/entities"
 	"log"
 	"os"
 

@@ -3,7 +3,6 @@ package handlers
 import (
 	"bufio"
 	"context"
-	"fmt"
 	"io"
 	"net"
 
@@ -48,9 +47,10 @@ func HandleRawConn(conn net.Conn) error {
 	// 2. Some server error
 	// 3. Some client input error
 	if err != nil {
+		zap.L().Warn("Error executing command", zap.Error(err))
 		conn.Write([]byte("E01"))
 	} else {
-		fmt.Println("HEREHEHEHEHHER")
+		zap.L().Debug("Command executed successfully")
 		conn.Write([]byte("1")) // 1 means success
 	}
 

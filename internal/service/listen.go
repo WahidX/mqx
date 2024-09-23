@@ -1,6 +1,7 @@
 package service
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"mqx/internal/entities"
@@ -31,7 +32,7 @@ func (s *service) DequeueOne(ctx context.Context, topic string) (*entities.Messa
 	return msg, nil
 }
 
-func (s *service) Listen(ctx context.Context, topic string, conn net.Conn) {
+func (s *service) Listen(ctx context.Context, topic string, reader *bufio.Reader, conn net.Conn) {
 	// First keep dequeuing messages and write in conn
 	// When there's no messages; store the conn in topicHub
 	// and keep reading the connection for exit signal
@@ -63,8 +64,11 @@ func (s *service) Listen(ctx context.Context, topic string, conn net.Conn) {
 
 		//  msg == nil
 		topichub.AddConnection(topic, conn)
+		zap.L().Debug("New connection added in topicHub")
 
-		// Keep reading exit signal
+		_, _ = reader.ReadByte() // the program will block in this line
+		zap.L().Debug("Listener disconnects, closing connection...", zap.String("remote_addr", conn.RemoteAddr().String()))
+		return
 	}
 }
 

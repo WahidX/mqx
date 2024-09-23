@@ -20,7 +20,6 @@ type Handler interface {
 
 	Publish(ctx context.Context, reader *bufio.Reader, conn net.Conn) error
 	Listen(ctx context.Context, reader *bufio.Reader, conn net.Conn) error
-	DequeueOne(ctx context.Context, reader *bufio.Reader, conn net.Conn) error
 }
 
 type handler struct {

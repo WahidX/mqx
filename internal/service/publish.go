@@ -2,10 +2,10 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"mqx/internal/entities"
 	"mqx/internal/topichub"
-	"net/http"
+
+	"go.uber.org/zap"
 )
 
 func (s *service) Enqueue(ctx context.Context, msg *entities.Message) error {
@@ -16,34 +16,28 @@ func (s *service) Enqueue(ctx context.Context, msg *entities.Message) error {
 			Timestamp: msg.Timestamp,
 			Topic:     msg.Topic,
 		})
+		if err == nil {
+			zap.L().Debug("Message stored successfully")
+		}
 		return err
 	}
 
 	// Start pushing the message to connected listeners if there's any
-	resWriters := topichub.GetTopicConns(msg.Topic)
-	if len(resWriters) == 0 {
+	conns := topichub.GetTopicConns(msg.Topic)
+	if len(conns) == 0 {
 		return enqueueMesasge()
 	}
 
 	sent := 0
 
-	for _, w := range resWriters {
-		flusher, ok := w.(http.Flusher)
-		if !ok {
-			// http.Error (w, "Streaming not supported", http.StatusInternalServerError)
+	for _, conn := range conns {
+		_, err := conn.Write(msg.Data)
+		if err != nil {
 			// !! Need to close the connection somehow
-
-			continue
-		}
-
-		// Write the message to the response writer
-		_, e := fmt.Fprintln(w, msg)
-		if e != nil {
-			// !! Need to close the connection somehow
+			zap.L().Debug("Failed to write message to listener", zap.Error(err))
 			continue
 		} else {
 			sent++
-			flusher.Flush()
 		}
 	}
 

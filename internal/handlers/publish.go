@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"context"
 	"encoding/binary"
-	"mqx/internal/entities"
 	"io"
+	"mqx/internal/entities"
 	"net"
 	"time"
 
@@ -52,6 +52,5 @@ func (h *handler) Publish(ctx context.Context, reader *bufio.Reader, conn net.Co
 		return err
 	}
 
-	zap.L().Debug("Message stored successfully")
 	return nil
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"mqx/internal/entities"
 	"mqx/internal/topichub"
+	"net"
 	"net/http"
 	"time"
 
@@ -28,6 +29,43 @@ func (s *service) DequeueOne(ctx context.Context, topic string) (*entities.Messa
 	}
 
 	return msg, nil
+}
+
+func (s *service) Listen(ctx context.Context, topic string, conn net.Conn) {
+	// First keep dequeuing messages and write in conn
+	// When there's no messages; store the conn in topicHub
+	// and keep reading the connection for exit signal
+	// From topicHub messages will be sent to respective conn.
+
+	errCount := 0
+
+	for {
+		msg, err := s.DequeueOne(ctx, topic)
+		if err != nil {
+			if errCount > 5 {
+				return
+			}
+			errCount++
+			continue
+		}
+
+		errCount = 0
+
+		if msg != nil {
+			_, err := conn.Write(msg.Data)
+			if err != nil {
+				zap.L().Warn("Failed to write message", zap.Error(err))
+				conn.Close()
+				return
+			}
+			continue
+		}
+
+		//  msg == nil
+		topichub.AddConnection(topic, conn)
+
+		// Keep reading exit signal
+	}
 }
 
 func (s *service) DequeueStream(ctx context.Context, w http.ResponseWriter, topic string) {
@@ -69,7 +107,7 @@ func (s *service) DequeueStream(ctx context.Context, w http.ResponseWriter, topi
 
 			if msg == nil {
 				// save the connection in topicHub and wait for any new message
-				topichub.AddConnection(topic, w)
+				// topichub.AddConnection(topic, w)
 				continue
 			}
 

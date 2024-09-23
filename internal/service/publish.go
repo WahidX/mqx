@@ -30,7 +30,7 @@ func (s *service) Enqueue(ctx context.Context, msg *entities.Message) error {
 	for _, w := range resWriters {
 		flusher, ok := w.(http.Flusher)
 		if !ok {
-			http.Error(w, "Streaming not supported", http.StatusInternalServerError)
+			// http.Error (w, "Streaming not supported", http.StatusInternalServerError)
 			// !! Need to close the connection somehow
 
 			continue

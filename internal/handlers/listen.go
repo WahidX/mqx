@@ -4,12 +4,11 @@ import (
 	"bufio"
 	"context"
 	"net"
-	"time"
 
 	"go.uber.org/zap"
 )
 
-// Means we need to deenqueue a message
+// Means we need to dequeue a message
 func (h *handler) Listen(ctx context.Context, reader *bufio.Reader, conn net.Conn) error {
 	// Flow:
 	// - Read the topic name
@@ -34,9 +33,9 @@ func (h *handler) Listen(ctx context.Context, reader *bufio.Reader, conn net.Con
 		}
 		errCount = 0
 
-		if msg == nil {
-			zap.L().Debug("Waiting for message on topic:" + topic)
-			time.Sleep(3 * time.Second)
+		if msg == nil { // No message left so save the connection in topicHub
+			zap.L().Debug("No more messages left, pushing the connection to topicHub", zap.String("topic", topic))
+
 			continue
 		}
 

@@ -1,14 +1,14 @@
 package topichub
 
 import (
-	"net/http"
+	"net"
 	"sync"
 
 	"go.uber.org/zap"
 )
 
 var (
-	topicHub map[string][]http.ResponseWriter
+	topicHub map[string][]net.Conn
 	once     sync.Once
 )
 
@@ -20,7 +20,7 @@ func InitTopicHub() {
 	}
 
 	once.Do(func() {
-		topicHub = make(map[string][]http.ResponseWriter)
+		topicHub = make(map[string][]net.Conn)
 		zap.L().Info("TopicHub is initialized")
 	})
 }

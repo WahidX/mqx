@@ -38,7 +38,6 @@ func HandleRawConn(conn net.Conn) error {
 	default:
 		zap.L().Info("Unknown command", zap.Any("incoming command", commandByte))
 		conn.Write([]byte("Unknown command"))
-
 	}
 
 	// Need to handle the error in a better way

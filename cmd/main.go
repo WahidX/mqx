@@ -52,7 +52,6 @@ func main() {
 
 	// Start a new goroutine to accept and handle incoming connections concurrently
 	for {
-		zap.L().Info("Waiting for new connection...")
 		conn, err := server.Accept()
 		if err != nil {
 			zap.L().Warn("Error accepting connection", zap.Error(err))

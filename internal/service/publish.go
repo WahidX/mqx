@@ -8,7 +8,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func (s *service) Enqueue(ctx context.Context, msg *entities.Message) error {
+func (s *service) Publish(ctx context.Context, msg *entities.Message) error {
 	enqueueMesasge := func() error {
 		// Enqueue the message
 		_, err := s.Repository.EnqueueMessage(ctx, &entities.MessageRow{
@@ -33,7 +33,7 @@ func (s *service) Enqueue(ctx context.Context, msg *entities.Message) error {
 	for _, conn := range conns {
 		_, err := conn.Write(msg.Data)
 		if err != nil {
-			// !! Need to close the connection somehow
+			conn.Close()
 			zap.L().Debug("Failed to write message to listener", zap.Error(err))
 			continue
 		} else {

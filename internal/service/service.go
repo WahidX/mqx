@@ -7,15 +7,12 @@ import (
 	"mqx/internal/repository"
 	"mqx/internal/topichub"
 	"net"
-	"net/http"
 )
 
 type Service interface {
-	Enqueue(ctx context.Context, msg *entities.Message) error
-	DequeueOne(ctx context.Context, topic string) (*entities.Message, error)
-	DequeueStream(ctx context.Context, w http.ResponseWriter, topic string)
-
+	Publish(ctx context.Context, msg *entities.Message) error
 	Listen(ctx context.Context, topic string, reader *bufio.Reader, conn net.Conn)
+	DequeueOne(ctx context.Context, topic string) (*entities.Message, error)
 }
 
 type service struct {

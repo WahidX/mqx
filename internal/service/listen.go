@@ -7,8 +7,6 @@ import (
 	"mqx/internal/entities"
 	"mqx/internal/topichub"
 	"net"
-	"net/http"
-	"time"
 
 	"go.uber.org/zap"
 )
@@ -70,56 +68,4 @@ func (s *service) Listen(ctx context.Context, topic string, reader *bufio.Reader
 		zap.L().Debug("Listener disconnects, closing connection...", zap.String("remote_addr", conn.RemoteAddr().String()))
 		return
 	}
-}
-
-func (s *service) DequeueStream(ctx context.Context, w http.ResponseWriter, topic string) {
-	// Set headers to indicate that the connection should remain open
-	w.Header().Set("Content-Type", "text/event-stream") // For SSE, you can also use "text/plain"
-	w.Header().Set("Cache-Control", "no-cache")
-	w.Header().Set("Connection", "keep-alive")
-
-	// Flusher is required to flush the response writer buffer manually
-	flusher, ok := w.(http.Flusher)
-	if !ok {
-		http.Error(w, "Streaming not supported", http.StatusInternalServerError)
-		return
-	}
-
-	// Stop the stream in case context cancelled
-	// Simulate a stream of messages
-
-	errCount := 0
-
-	for {
-		select {
-		case <-ctx.Done():
-			zap.L().Info("Listener disconnected")
-			return
-
-		default:
-			// Keep Getting messages from the topic
-			msg, err := s.DequeueOne(ctx, topic)
-			if err != nil {
-				errCount++
-				if errCount > 5 {
-					zap.L().Warn("Error getting message", zap.Any("error", err))
-					return
-				}
-			}
-
-			errCount = 0
-
-			if msg == nil {
-				// save the connection in topicHub and wait for any new message
-				// topichub.AddConnection(topic, w)
-				continue
-			}
-
-			fmt.Fprintf(w, "New message %s\n\n", msg.Data)
-			flusher.Flush() // Flush the data to the client
-
-			time.Sleep(3 * time.Second)
-		}
-	}
-
 }

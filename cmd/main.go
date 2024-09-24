@@ -4,12 +4,16 @@ import (
 	"context"
 	"errors"
 	"net"
+	"os"
+	"os/signal"
 	"syscall"
+	"time"
 
 	"mqx/internal/db"
 	"mqx/internal/handlers"
 	"mqx/internal/repository"
 	"mqx/internal/service"
+	"mqx/internal/topichub"
 	"mqx/internal/utils"
 	"mqx/pkg/logger"
 
@@ -47,19 +51,36 @@ func main() {
 	if err != nil {
 		zap.L().Fatal("Error starting server: %v", zap.Error(err))
 	}
-
 	zap.L().Info("Message Queue Server listening on port " + utils.Conf.Server.Port)
 
 	// Start a new goroutine to accept and handle incoming connections concurrently
-	for {
-		conn, err := server.Accept()
-		if err != nil {
-			zap.L().Warn("Error accepting connection", zap.Error(err))
-			continue
+	go func() {
+		for {
+			conn, err := server.Accept()
+			if err != nil {
+				zap.L().Warn("Error accepting connection", zap.Error(err))
+				continue
+			}
+
+			zap.L().Info("New connection accepted", zap.String("remote_addr", conn.RemoteAddr().String()))
+			go handlers.HandleRawConn(ctx, conn)
 		}
+	}()
 
-		zap.L().Info("New connection accepted", zap.String("remote_addr", conn.RemoteAddr().String()))
-		go handlers.HandleRawConn(conn)
-	}
+	// Channel to listen for interrupt or terminate signals
+	stopChan := make(chan os.Signal, 1)
+	signal.Notify(stopChan, os.Interrupt, syscall.SIGTERM) //Ctrl+C (SIGINT) or other Interrupt signals
 
+	// Waiting for
+	<-stopChan
+
+	zap.L().Info("Shutting down server...")
+
+	// Context with timeout to allow graceful shutdown
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	topichub.CloseAllConns(ctx)
+
+	zap.L().Info("Server stopped gracefully.")
 }

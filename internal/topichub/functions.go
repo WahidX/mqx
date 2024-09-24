@@ -3,7 +3,6 @@ package topichub
 import (
 	"context"
 	"net"
-	"net/http"
 )
 
 func GetTopicConns(topic string) []net.Conn {
@@ -11,7 +10,6 @@ func GetTopicConns(topic string) []net.Conn {
 }
 
 func AddConnection(topic string, conn net.Conn) {
-
 	topicHub[topic] = append(topicHub[topic], conn)
 }
 
@@ -28,8 +26,9 @@ func RemoveConn(topic string, conn net.Conn) {
 func CloseAllConns(ctx context.Context) {
 	for _, conns := range topicHub {
 		for _, conn := range conns {
-			conn.Write([]byte("Server is shutting down"))
-			conn.(http.Flusher).Flush()
+			if _, e := conn.Write([]byte("Server is shutting down")); e == nil { // e !=nil means connection is closed already
+				conn.Close()
+			}
 		}
 	}
 }

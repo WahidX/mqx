@@ -9,9 +9,8 @@ import (
 	"go.uber.org/zap"
 )
 
-func HandleRawConn(conn net.Conn) error {
+func HandleRawConn(ctx context.Context, conn net.Conn) error {
 	reader := bufio.NewReader(conn)
-	ctx := context.Background()
 	defer conn.Close()
 
 	// Reading the first byte(command) and handling error (if connection closed or something)

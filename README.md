@@ -26,3 +26,10 @@ And the data can be retrived in one direction only. sort of append only logs in 
 
 - Need a generic ErrorHandler
   Which will handle all the connection close erorrs
+
+## Own datastorage design
+
+- For each topic we will have one file where we will keep all the messages with right delimeters.
+- We will have a index file for each topic which will keep the offset of the messages in the data file.
+- On server start we will load all the topics and their index files in memory.
+- On each message publish we will write the message in the data file and update the index file.

@@ -33,3 +33,17 @@ And the data can be retrived in one direction only. sort of append only logs in 
 - We will have a index file for each topic which will keep the offset of the messages in the data file.
 - On server start we will load all the topics and their index files in memory.
 - On each message publish we will write the message in the data file and update the index file.
+
+### Thoughts
+
+We need to store mainly 3 things.
+
+- The messages in [topic].msg file
+- The index of the messages in file
+- The consumer offsets
+
+All messages will come and get stored in a file for the topic. All the messages will be stored in a file with a delimiter. And the index file will have the offset of the messages in the data file.
+
+### Memory data structure
+
+- We will have a map of topic name to topic struct. Where the topic struct will have the index file and msg file.

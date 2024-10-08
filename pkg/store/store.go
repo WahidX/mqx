@@ -1,9 +1,15 @@
 package store
 
-import "context"
+import (
+	"context"
+	"mqx/pkg/store/types"
+)
 
-func Init() {
-	// Do something
+var storeSnapShot map[string]*types.Topic
+
+func init() {
+	// Find the index file and load the topics into memory by filling the store struct.
+
 }
 
 type Store interface {
@@ -12,6 +18,7 @@ type Store interface {
 }
 
 type store struct {
+	topicMap map[string]*types.Topic
 }
 
 func New() Store {

@@ -42,6 +42,8 @@ We need to store mainly 3 things.
 - The index of the messages in file
 - The consumer offsets
 
+Lets first assume we will have only one consumer. No need to care the consumers
+
 All messages will come and get stored in a file for the topic. All the messages will be stored in a file with a delimiter. And the index file will have the offset of the messages in the data file.
 
 ### Memory data structure

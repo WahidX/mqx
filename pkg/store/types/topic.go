@@ -1,8 +1,9 @@
 package types
 
 type Topic struct {
-	Name   string
-	Offset int64
+	Name    string
+	Roffset int64
+	Woffset int64
 }
 
 func (t *Topic) FileName() string {

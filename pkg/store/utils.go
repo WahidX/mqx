@@ -17,6 +17,7 @@ func topicNameIsValid(topic string) error {
 	return nil
 }
 
+// It returns the file name for the message file for a given topic
 func getMessageFileName(topic string) string {
 	return "files/" + topic + ".msg"
 }

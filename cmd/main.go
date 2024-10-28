@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"errors"
+	"fmt"
 	"net"
 	"os"
 	"os/signal"
@@ -16,6 +16,7 @@ import (
 	"mqx/internal/topichub"
 	"mqx/internal/utils"
 	"mqx/pkg/logger"
+	"mqx/pkg/store"
 
 	"go.uber.org/zap"
 )
@@ -27,11 +28,14 @@ func main() {
 	// Logger setup
 	l := logger.Init(utils.Conf.Env)
 	defer func() {
-		err := l.Sync()
-		if err != nil && !errors.Is(err, syscall.ENOTTY) {
-			zap.L().Warn("Error syncing logger: ", zap.Any("error", err))
-		}
+		_ = l.Sync() // Dosent work
+		// if err != nil && !errors.Is(err, syscall.ENOTTY) {
+		// 	zap.L().Warn("Error syncing logger: ", zap.Any("error", err))
+		// }
 	}()
+
+	tempMain()
+	return
 
 	sqliteDB := db.Connect()
 	defer sqliteDB.Close()
@@ -83,4 +87,56 @@ func main() {
 	topichub.CloseAllConns(ctx)
 
 	zap.L().Info("Server stopped gracefully.")
+}
+
+func tempMain() {
+	fmt.Println("starting temp script..............")
+
+	s := "\n"
+	b := []byte(s)
+	fmt.Println(b)
+	fmt.Println(len(b))
+
+	store := store.New()
+
+	topic := "tpc"
+	ctx := context.Background()
+
+	// err := store.Enqueue(ctx, topic, []byte("HelloThere:"+time.Now().String()))
+	// if err != nil {
+	// 	fmt.Println("ERR:", err)
+	// 	return
+	// }
+
+	data, err := store.Dequeue(ctx, topic)
+	if err != nil {
+		fmt.Println("ERR:", err)
+		return
+	}
+
+	fmt.Println(string(data))
+
+	data, err = store.Dequeue(ctx, topic)
+	if err != nil {
+		fmt.Println("ERR:", err)
+		return
+	}
+
+	fmt.Println(string(data))
+
+	data, err = store.Dequeue(ctx, topic)
+	if err != nil {
+		fmt.Println("ERR:", err)
+		return
+	}
+
+	fmt.Println(string(data))
+
+	data, err = store.Dequeue(ctx, topic)
+	if err != nil {
+		fmt.Println("ERR:", err)
+		return
+	}
+
+	fmt.Println(string(data))
 }

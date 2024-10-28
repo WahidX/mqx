@@ -1,6 +1,9 @@
 package types
 
+import "sync"
+
 type Topic struct {
+	Mu      sync.RWMutex
 	Name    string
 	Roffset int64
 	Woffset int64
